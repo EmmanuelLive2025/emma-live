@@ -1,354 +1,210 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<title>Emma Live Matches</title>
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EMMANUEL LIVE – High Speed Dashboard</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #8B0000;
+            --accent: #FF4500;
+            --bg: #0a0a0a;
+            --card: #161616;
+            --live: #25D366;
+            --text: #ffffff;
+            --dim: #999;
+        }
 
-<meta name="description" content="Emma Live – Watch live football scores in real time">
-<meta name="theme-color" content="#8B0000">
-<link rel="icon" href="emmanuel.png">
-<link rel="manifest" href="manifest.json">
+        body {
+            margin: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: var(--bg); color: var(--text);
+            -webkit-font-smoothing: antialiased;
+        }
 
-<style>
-*{box-sizing:border-box;}
-html{scroll-behavior:smooth;}
-body{
- margin:0;
- font-family:Segoe UI,Arial,sans-serif;
- color:#fff;
- background:linear-gradient(135deg,#8B0000,#FF4500);
-}
+        /* Optimized Header */
+        header {
+            background: var(--primary); height: 60px;
+            display: flex; align-items: center; justify-content: center;
+            position: sticky; top: 0; z-index: 1000;
+            border-bottom: 2px solid var(--accent);
+            box-shadow: 0 2px 10px rgba(0,0,0,0.5);
+        }
 
-/* HEADER */
-header{
- background:rgba(139,0,0,.9);
- padding:12px 20px;
- display:flex;
- justify-content:space-between;
- align-items:center;
- position:sticky;
- top:0;
- z-index:1000;
-}
-.brand{display:flex;align-items:center;gap:10px;}
-.brand img{width:45px;height:45px;border-radius:50%;}
-.brand span{font-size:22px;font-weight:700;}
-nav a{
- color:#FFDAB9;
- margin-left:18px;
- text-decoration:none;
- font-weight:500;
-}
-nav a.active{border-bottom:2px solid #FFDAB9;}
-nav a:hover{color:#fff;}
-#menu-btn{
- display:none;
- font-size:26px;
- background:none;
- border:none;
- color:#FFDAB9;
- cursor:pointer;
-}
+        .logo { font-size: 24px; font-weight: 900; letter-spacing: 4px; }
 
-/* MAIN */
-main{max-width:1200px;margin:auto;padding:15px;}
-section{margin-bottom:40px;}
-.title{font-size:28px;font-weight:bold;}
-.subtitle{color:#FFDAB9;margin-bottom:20px;}
+        .container { max-width: 800px; margin: 0 auto; padding: 10px; }
 
-/* LIVE */
-.live-box{
- background:rgba(139,0,0,.85);
- padding:10px;
- border-radius:14px;
-}
-.loader{
- text-align:center;
- padding:15px;
- font-weight:bold;
- color:#FFDAB9;
- animation:pulse 1.5s infinite;
-}
-@keyframes pulse{
- 0%{opacity:.3}50%{opacity:1}100%{opacity:.3}
-}
-iframe{
- width:100%;
- height:650px;
- border:none;
- border-radius:12px;
- background:#fff;
-}
+        /* Fast Search Input */
+        .search-box { position: relative; margin: 15px 0; }
+        #search-input {
+            width: 100%; padding: 12px 40px 12px 15px;
+            border-radius: 8px; border: 1px solid #333;
+            background: #111; color: #fff; outline: none;
+            box-sizing: border-box;
+        }
 
-/* CONTACT */
-.contact-box{
- background:rgba(139,0,0,.85);
- padding:20px;
- border-radius:14px;
- max-width:500px;
-}
-.contact-box input,
-.contact-box textarea{
- width:100%;
- padding:12px;
- margin-bottom:12px;
- border:none;
- border-radius:8px;
-}
-.contact-box button{
- width:100%;
- padding:12px;
- background:#25D366;
- border:none;
- color:#fff;
- font-weight:bold;
- border-radius:8px;
- cursor:pointer;
-}
+        .search-box i { position: absolute; right: 15px; top: 50%; transform: translateY(-50%); color: var(--accent); }
 
-/* SHARE */
-.share-box{
- background:rgba(139,0,0,.85);
- padding:20px;
- border-radius:14px;
- max-width:500px;
-}
-.share-buttons{
- display:flex;
- gap:15px;
- margin-top:10px;
-}
-.share-buttons a{
- flex:1;
- text-align:center;
- padding:12px;
- border-radius:8px;
- color:#fff;
- font-weight:bold;
- text-decoration:none;
-}
-.whatsapp{background:#25D366}
-.facebook{background:#1877F2}
-.instagram{background:#E1306C}
+        /* Match Card - GPU Accelerated */
+        .match-card {
+            background: var(--card); border-radius: 10px; margin-bottom: 12px;
+            border: 1px solid #222; overflow: hidden;
+            will-change: transform; /* Boosts mobile performance */
+        }
 
-/* FLOAT WHATSAPP */
-.float-wa{
- position:fixed;
- bottom:20px;
- right:20px;
- width:55px;
- height:55px;
- background:#25D366;
- display:flex;
- align-items:center;
- justify-content:center;
- border-radius:50%;
- z-index:2000;
- cursor:pointer;
-}
-.float-wa img{width:60%;}
+        .league-bar {
+            padding: 8px 12px; background: rgba(255,255,255,0.02);
+            display: flex; align-items: center; gap: 10px;
+            font-size: 11px; font-weight: bold; color: var(--dim);
+            border-bottom: 1px solid #222;
+        }
 
-/* MODAL */
-#waModal{
- display:none;
- position:fixed;
- inset:0;
- background:rgba(0,0,0,.6);
- z-index:3000;
- align-items:center;
- justify-content:center;
-}
-#waModal .box{
- background:#8B0000;
- padding:20px;
- border-radius:12px;
- width:90%;
- max-width:350px;
-}
-#waModal input,#waModal textarea{
- width:100%;
- padding:10px;
- margin-bottom:10px;
- border:none;
- border-radius:8px;
-}
-#waModal button{
- width:100%;
- padding:10px;
- border:none;
- border-radius:8px;
- font-weight:bold;
- cursor:pointer;
-}
-.send{background:#25D366;color:#fff;}
-.close{background:#444;color:#fff;margin-top:5px;}
+        .league-logo { width: 16px; height: 16px; object-fit: contain; }
 
-/* TOP BUTTON */
-#topBtn{
- position:fixed;
- bottom:90px;
- right:20px;
- padding:12px 14px;
- border:none;
- border-radius:50%;
- background:#FF4500;
- color:white;
- font-size:18px;
- cursor:pointer;
- display:none;
- z-index:3000;
-}
+        .match-main {
+            display: grid; grid-template-columns: 1fr 90px 1fr;
+            padding: 15px 10px; align-items: center;
+        }
 
-/* OFFLINE */
-#offline{
- display:none;
- position:fixed;
- top:0;
- width:100%;
- background:#000;
- color:#fff;
- text-align:center;
- padding:10px;
- z-index:5000;
-}
+        .team { display: flex; flex-direction: column; align-items: center; text-align: center; }
+        .team img { width: 42px; height: 42px; object-fit: contain; margin-bottom: 5px; }
+        .team-name { font-size: 13px; font-weight: 600; }
 
-/* FOOTER */
-footer{
- text-align:center;
- padding:15px;
- color:#FFDAB9;
- border-top:1px solid #8B0000;
-}
+        .score-area { text-align: center; }
+        .score { font-size: 24px; font-weight: 800; margin-bottom: 2px; }
+        .status { 
+            font-size: 10px; font-weight: bold; padding: 2px 6px; 
+            border-radius: 4px; background: #222; display: inline-block;
+        }
 
-/* MOBILE */
-@media(max-width:768px){
- iframe{height:500px;}
- #menu-btn{display:block;}
- nav{display:none;flex-direction:column;}
-}
-</style>
+        .status-live { color: var(--live); background: rgba(37, 211, 102, 0.1); }
+
+        /* Scorer Footer */
+        .scorers {
+            padding: 8px 12px; font-size: 10.5px; color: var(--dim);
+            border-top: 1px solid #222; display: flex; justify-content: space-between;
+        }
+
+        .live-dot {
+            height: 5px; width: 5px; background: var(--live);
+            border-radius: 50%; display: inline-block;
+            margin-right: 4px; animation: blink 1s infinite;
+        }
+        @keyframes blink { 50% { opacity: 0; } }
+
+        .loader { text-align: center; padding: 50px; opacity: 0.5; }
+    </style>
 </head>
-
 <body>
 
-<div id="offline">? No Internet Connection</div>
+<header><div class="logo">EMMANUEL</div></header>
 
-<header>
-<div class="brand">
- <img src="emmanuel.png">
- <span>EMMA LIVE</span>
+<div class="container">
+    <div class="search-box">
+        <input type="text" id="search-input" placeholder="Quick search..." oninput="fastSearch()">
+        <i class="fas fa-search"></i>
+    </div>
+    <div id="matches-list">
+        <div class="loader">Optimizing connection...</div>
+    </div>
 </div>
-<button id="menu-btn">&#9776;</button>
-<nav>
- <a href="#live" class="active">Live</a>
- <a href="#share">Share</a>
- <a href="#contact">Contact</a>
-</nav>
-</header>
-
-<main>
-
-<section id="live">
-<div class="title">? Live Football Matches</div>
-<div class="subtitle">Watch live football scores in real time</div>
-
-<div class="live-box">
-<div class="loader" id="loader">Loading live matches…</div>
-<iframe onload="hideLoader()" src="https://www.scorebat.com/embed/livescore/" loading="lazy"></iframe>
-</div>
-</section>
-
-<section id="share">
-<div class="title">?? Share Emma Live</div>
-<div class="subtitle">Send Emma Live to your friends</div>
-
-<div class="share-box">
-<div class="share-buttons">
-<a class="whatsapp" href="https://wa.me/?text=Check%20out%20Emma%20Live:%20https://emmanuellive2025.github.io/EmmanuelLive2025/" target="_blank">WhatsApp</a>
-<a class="facebook" href="https://www.facebook.com/sharer/sharer.php?u=https://emmanuellive2025.github.io/EmmanuelLive2025/" target="_blank">Facebook</a>
-<a class="instagram" href="https://www.instagram.com/YOUR_PAGE" target="_blank">Instagram</a>
-</div>
-</div>
-</section>
-
-<section id="contact">
-<div class="title">?? Contact Emma Live</div>
-<div class="subtitle">Send us your message</div>
-
-<div class="contact-box">
-<form onsubmit="sendMessage(event)">
-<input type="text" placeholder="Your Name" required>
-<input type="email" placeholder="Your Email" required>
-<textarea rows="4" placeholder="Write your message..." required></textarea>
-<button type="submit">Send Message</button>
-</form>
-</div>
-</section>
-
-</main>
-
-<button id="topBtn" onclick="scrollTopPage()">?</button>
-
-<div class="float-wa" onclick="openWhatsAppForm()">
-<img src="https://upload.wikimedia.org/wikipedia/commons/6/6b/WhatsApp.svg">
-</div>
-
-<div id="waModal">
-<div class="box">
-<h3 style="text-align:center">?? WhatsApp Message</h3>
-<input id="phone" type="tel" placeholder="2507XXXXXXXX" pattern="2507[0-9]{8}">
-<textarea id="message" rows="4" placeholder="Type your message..."></textarea>
-<button class="send" onclick="sendWhatsApp()">Send</button>
-<button class="close" onclick="closeWhatsAppForm()">Close</button>
-</div>
-</div>
-
-<footer>
-<p>© <span id="year"></span> Emma Live • Fast • Secure • Free</p>
-<p style="font-size:13px">Live scores powered by ScoreBat</p>
-</footer>
 
 <script>
-document.getElementById("year").textContent=new Date().getFullYear();
+    const API_KEY = "88adb00d32f7428be92fe78765ab4796";
+    const PRIORITY_LEAGUES = [39, 310, 2, 3]; // England PL, Rwanda PL, UCL, UEL
+    let matchCache = [];
 
-/* MENU */
-const menuBtn=document.getElementById("menu-btn");
-const nav=document.querySelector("nav");
-menuBtn.onclick=()=>nav.style.display=nav.style.display==="flex"?"none":"flex";
-document.querySelectorAll("nav a").forEach(a=>{
- a.onclick=()=>{if(innerWidth<=768)nav.style.display="none";}
-});
+    async function loadData() {
+        try {
+            const today = new Date().toISOString().split('T')[0];
+            const res = await fetch(`https://v3.football.api-sports.io/fixtures?date=${today}`, {
+                headers: { "x-apisports-key": API_KEY }
+            });
+            const json = await res.json();
+            
+            if (json.response) {
+                // Sort once and cache
+                matchCache = json.response.sort((a, b) => {
+                    const aP = PRIORITY_LEAGUES.indexOf(a.league.id);
+                    const bP = PRIORITY_LEAGUES.indexOf(b.league.id);
+                    const aIdx = aP === -1 ? 999 : aP;
+                    const bIdx = bP === -1 ? 999 : bP;
+                    
+                    if (aIdx !== bIdx) return aIdx - bIdx;
+                    
+                    const live = ["1H", "2H", "HT", "ET", "P"];
+                    return (live.includes(b.fixture.status.short) ? 1 : 0) - (live.includes(a.fixture.status.short) ? 1 : 0);
+                });
+                render(matchCache);
+            }
+        } catch (e) {
+            document.getElementById('matches-list').innerHTML = "Check connection.";
+        }
+    }
 
-/* LOADER */
-function hideLoader(){document.getElementById("loader").style.display="none";}
+    function render(data) {
+        const container = document.getElementById('matches-list');
+        // Using a DocumentFragment for faster DOM rendering
+        const fragment = document.createDocumentFragment();
+        
+        const html = data.map(m => {
+            const isLive = ["1H", "2H", "HT", "ET", "P"].includes(m.fixture.status.short);
+            const time = new Date(m.fixture.date).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: false });
+            
+            let hScorers = "", aScorers = "";
+            if (m.events) {
+                hScorers = m.events.filter(e => e.type === "Goal" && e.team.id === m.teams.home.id).map(e => e.player.name).join(", ");
+                aScorers = m.events.filter(e => e.type === "Goal" && e.team.id === m.teams.away.id).map(e => e.player.name).join(", ");
+            }
 
-/* CONTACT */
-function sendMessage(e){
- e.preventDefault();
- alert("Thank you for contacting Emma Live!");
- e.target.reset();
-}
+            return `
+                <div class="match-card">
+                    <div class="league-bar">
+                        <img src="${m.league.logo}" class="league-logo" loading="lazy">
+                        <span>${m.league.name.toUpperCase()}</span>
+                    </div>
+                    <div class="match-main">
+                        <div class="team">
+                            <img src="${m.teams.home.logo}" loading="lazy">
+                            <span class="team-name">${m.teams.home.name}</span>
+                        </div>
+                        <div class="score-area">
+                            <div class="score">${m.goals.home ?? 0} - ${m.goals.away ?? 0}</div>
+                            <div class="status ${isLive ? 'status-live' : ''}">
+                                ${isLive ? `<span class="live-dot"></span>${m.fixture.status.elapsed}'` : (m.fixture.status.short === 'FT' ? 'FT' : time)}
+                            </div>
+                        </div>
+                        <div class="team">
+                            <img src="${m.teams.away.logo}" loading="lazy">
+                            <span class="team-name">${m.teams.away.name}</span>
+                        </div>
+                    </div>
+                    ${(hScorers || aScorers) ? `
+                        <div class="scorers">
+                            <div style="width:48%"><i class="fas fa-futbol"></i> ${hScorers || '-'}</div>
+                            <div style="width:48%; text-align:right;">${aScorers || '-'} <i class="fas fa-futbol"></i></div>
+                        </div>
+                    ` : ''}
+                </div>`;
+        }).join('');
+        
+        container.innerHTML = html || "<div class='loader'>No matches.</div>";
+    }
 
-/* WHATSAPP */
-function openWhatsAppForm(){waModal.style.display="flex";}
-function closeWhatsAppForm(){waModal.style.display="none";}
-function sendWhatsApp(){
- let p=phone.value.trim(),m=message.value.trim();
- if(!p||!m)return alert("Fill all fields");
- window.open("https://wa.me/"+p+"?text="+encodeURIComponent(m));
-}
+    function fastSearch() {
+        const query = document.getElementById('search-input').value.toLowerCase();
+        // Filters local cache (instant results)
+        const filtered = matchCache.filter(m => 
+            m.teams.home.name.toLowerCase().includes(query) || 
+            m.teams.away.name.toLowerCase().includes(query) ||
+            m.league.name.toLowerCase().includes(query)
+        );
+        render(filtered);
+    }
 
-/* TOP BTN */
-window.onscroll=()=>{
- topBtn.style.display=document.documentElement.scrollTop>300?"block":"none";
-};
-function scrollTopPage(){scrollTo({top:0,behavior:"smooth"});}
-
-/* OFFLINE */
-addEventListener("offline",()=>offline.style.display="block");
-addEventListener("online",()=>offline.style.display="none");
+    loadData();
+    setInterval(loadData, 60000); // Background sync every minute
 </script>
-
 </body>
 </html>
